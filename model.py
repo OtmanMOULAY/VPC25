@@ -1,8 +1,9 @@
 import librosa
 import numpy as np
 import soundfile as sf
-
-
+import os
+import csv
+import argparse
 
 def interpolate_time(idxs: np.ndarray, arr):
     start = np.floor(idxs).astype(int) 
@@ -18,10 +19,10 @@ def round_interpolate_time(idxs: np.ndarray, arr):
     idxs = np.clip((idxs + 0.5).astype(int), 0, arr.shape[2] - 1)  # Prevent out-of-bounds
     return arr[:, :, idxs]
 
-pitch_shift = -1.5
-n_fft = 4096
-hop_len = 1024
-win_len = 4096
+pitch_shift = 5
+n_fft = 1024
+hop_len = 256
+win_len = 1024
 
 def anonymize(input_audio_path): 
     waveform, sr = librosa.load(input_audio_path, sr=None, mono=False)
@@ -60,16 +61,9 @@ def anonymize(input_audio_path):
     synth_stft = shifted_mags * np.exp(shifted_phases * 1j)
     new_waveform = librosa.istft(synth_stft, hop_length=hop_len, win_length=win_len, n_fft=n_fft)
 
-   
-    new_waveform = librosa.resample(new_waveform, orig_sr=len(new_waveform.T), target_sr=original_length)
-
-   
-    output_audio_path = "output_audio.wav"
-    sf.write(output_audio_path, new_waveform.T, sr)
-
-    audio = new_waveform.T
-    sr  = sr
-
+    # Resample the waveform to match the original length
+    new_waveform = librosa.resample(new_waveform, orig_sr=sr, target_sr=sr * (len(new_waveform.T) / original_length))
+    audio=new_waveform.T
+    sr=sr
     return audio, sr
-
 
