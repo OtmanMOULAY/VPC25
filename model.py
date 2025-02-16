@@ -1,8 +1,8 @@
 import librosa
 import numpy as np
 import soundfile as sf
-import IPython.display as idisplay
-import matplotlib.pyplot as plt
+
+
 
 def interpolate_time(idxs: np.ndarray, arr):
     start = np.floor(idxs).astype(int) 
@@ -72,4 +72,4 @@ def anonymize(input_audio_path):
 
     return audio, sr
 
-print(anonymize("evaluation_data/Trial/speaker10/67-150225-03.wav"))
+
